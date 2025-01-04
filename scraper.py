@@ -4,6 +4,8 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 import time
+from selenium.webdriver.common.keys import Keys
+
 
 def get_driver():
 
@@ -49,5 +51,35 @@ def scrape_jobs(url, username, password):
         time.sleep(5)  # Allow time for the login to process and redirect to the dashboard
 
 
+        #according to the html structure reviewed with inspect tool..
+        #in this case for my future I have to passs the keyword, contract hours and  location
 
-                
+        keyword_input = driver.find_element(By.CSS_SELECTOR, "input[placeholder= 'eg. Graduate, Intern, Diversity, Disability]")
+        keyword_input.send_keys("Intern")
+
+
+        contract_hours_dropdown = driver.find_element(By.XPATH, "//select[@id='contractHours']" )
+        contract_hours_dropdown.send_keys(Keys.DOWN)
+        contract_hours_dropdown.send_keys(Keys.RETURN)
+
+
+        location_input = driver.find_element(By.XPATH,"//button[contains(text(), 'Search')]" )
+        location_input.send_keys("London")
+
+
+        time.sleep(5)
+
+        #extract the results
+        jobs = driver.find_elements(By.CLASS_NAME, "")
+
+        for job in jobs:
+            
+            title = job.find_element(By.CLASS_NAME, "")
+            location =job.find_element(By.CLASS_NAME,"" )
+
+
+    finally:
+
+        driver.quit() #close browser
+
+
