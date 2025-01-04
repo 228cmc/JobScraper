@@ -45,6 +45,9 @@ def scrape_jobs(url, username, password):
         time.sleep(3)  # Wait for the page to load 
 
         # Log in 
+        #use find_element of selenium 
+
+        
         driver.find_element(By.ID, "username").send_keys(username)  #pass my username
         driver.find_element(By.ID, "password").send_keys(password)  # andd password
         driver.find_element(By.ID, "submitButton").click()  # click the login button to submit the form
@@ -76,6 +79,8 @@ def scrape_jobs(url, username, password):
             
             title = job.find_element(By.CLASS_NAME, "")
             location =job.find_element(By.CLASS_NAME,"" )
+            print(f"Job Title: {title}, Location: {location}")
+
 
 
     finally:
