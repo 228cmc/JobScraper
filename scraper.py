@@ -73,13 +73,17 @@ def scrape_jobs(url, username, password):
         time.sleep(5)
 
         #extract the results
-        jobs = driver.find_elements(By.CLASS_NAME, "")
+        jobs = driver.find_elements(By.CLASS_NAME, "job-search-results-list-item")  # Update with the correct class name
 
         for job in jobs:
             
-            title = job.find_element(By.CLASS_NAME, "")
-            location =job.find_element(By.CLASS_NAME,"" )
-            print(f"Job Title: {title}, Location: {location}")
+            title = job.find_element(By.CLASS_NAME, "JoirlvIVRON4KeFSOTWva").text
+            company = job.find_element(By.XPATH, ".//a[contains(@href, '/myfuture/organisations/detail')]").text
+
+            location = job.find_element(By.XPATH, ".//div[contains(@class, 'i5BI9zXrlLbhrt2acxeB')]//div").text
+            salary = job.find_element(By.XPATH, ".//div[contains(@class, 'fa-wallet')]/following-sibling::div").text
+
+            print(f"Job Title: {title}, company: {company}, Location: {location}, salary: {salary}")
 
 
 
