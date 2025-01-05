@@ -22,7 +22,8 @@ def get_driver():
     options.add_argument("--headless")
     options.add_argument("disable-gpu")
     options.add_argument("--no-sandbox")#sandbox security thing from chrome it could cause conflict with docker 
-    return webdriver.Chrome(service= Service(ChromeDriverManager()))
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+
 
 
 def scrape_jobs(url, username, password):
@@ -40,55 +41,63 @@ def scrape_jobs(url, username, password):
     # Initialize the WebDriver
     driver = get_driver()  # Set up the Chrome WebDriver with the configured options
 
+    driver.get(url)  # Open the  URL 
+    time.sleep(10)  # Wait for the page to load 
+
+    # Log in 
+    #use find_element of selenium  interact buttons
+
+    current_student_button = driver.find_element(By.XPATH, "//button[contains(text(), 'Current Student or Staff')]")
+    current_student_button.click()
+    time.sleep(10) 
     try:
-        driver.get(url)  # Open the  URL 
-        time.sleep(3)  # Wait for the page to load 
+        username_field = driver.find_element(By.ID, "username")
+        print("Página de inicio de sesión cargada correctamente.")
+    except Exception as e:
+        print("Error: No se pudo cargar la página de inicio de sesión.")
+        print(e)
+    
+    driver.find_element(By.ID, "username").send_keys(username)  #pass my username
+    driver.find_element(By.ID, "password").send_keys(password)  # andd password
+    driver.find_element(By.ID, "submitButton").click()  # click the login button to submit the form
+    time.sleep(5)  # Allow time for the login to process and redirect to the dashboard
 
-        # Log in 
-        #use find_element of selenium 
 
+    #according to the html structure reviewed with inspect tool..
+    #in this case for my future I have to passs the keyword, contract hours and  location
+
+    keyword_input = driver.find_element(By.CSS_SELECTOR, "input[placeholder= 'eg. Graduate, Intern, Diversity, Disability]")
+    keyword_input.send_keys("Intern")
+
+
+    contract_hours_dropdown = driver.find_element(By.XPATH, "//select[@id='contractHours']" )
+    contract_hours_dropdown.send_keys(Keys.DOWN)
+    contract_hours_dropdown.send_keys(Keys.RETURN)
+
+
+    location_input = driver.find_element(By.XPATH,"//button[contains(text(), 'Search')]" )
+    location_input.send_keys("London")
+
+
+    time.sleep(5)
+
+    #extract the results
+    jobs = driver.find_elements(By.CLASS_NAME, "job-search-results-list-item")  # Update with the correct class name
+
+    for job in jobs:
         
-        driver.find_element(By.ID, "username").send_keys(username)  #pass my username
-        driver.find_element(By.ID, "password").send_keys(password)  # andd password
-        driver.find_element(By.ID, "submitButton").click()  # click the login button to submit the form
-        time.sleep(5)  # Allow time for the login to process and redirect to the dashboard
+        title = job.find_element(By.CLASS_NAME, "JoirlvIVRON4KeFSOTWva").text
+        company = job.find_element(By.XPATH, ".//a[contains(@href, '/myfuture/organisations/detail')]").text
 
+        location = job.find_element(By.XPATH, ".//div[contains(@class, 'i5BI9zXrlLbhrt2acxeB')]//div").text
+        salary = job.find_element(By.XPATH, ".//div[contains(@class, 'fa-wallet')]/following-sibling::div").text
 
-        #according to the html structure reviewed with inspect tool..
-        #in this case for my future I have to passs the keyword, contract hours and  location
-
-        keyword_input = driver.find_element(By.CSS_SELECTOR, "input[placeholder= 'eg. Graduate, Intern, Diversity, Disability]")
-        keyword_input.send_keys("Intern")
-
-
-        contract_hours_dropdown = driver.find_element(By.XPATH, "//select[@id='contractHours']" )
-        contract_hours_dropdown.send_keys(Keys.DOWN)
-        contract_hours_dropdown.send_keys(Keys.RETURN)
-
-
-        location_input = driver.find_element(By.XPATH,"//button[contains(text(), 'Search')]" )
-        location_input.send_keys("London")
-
-
-        time.sleep(5)
-
-        #extract the results
-        jobs = driver.find_elements(By.CLASS_NAME, "job-search-results-list-item")  # Update with the correct class name
-
-        for job in jobs:
-            
-            title = job.find_element(By.CLASS_NAME, "JoirlvIVRON4KeFSOTWva").text
-            company = job.find_element(By.XPATH, ".//a[contains(@href, '/myfuture/organisations/detail')]").text
-
-            location = job.find_element(By.XPATH, ".//div[contains(@class, 'i5BI9zXrlLbhrt2acxeB')]//div").text
-            salary = job.find_element(By.XPATH, ".//div[contains(@class, 'fa-wallet')]/following-sibling::div").text
-
-            print(f"Job Title: {title}, company: {company}, Location: {location}, salary: {salary}")
+        print(f"Job Title: {title}, company: {company}, Location: {location}, salary: {salary}")
 
 
 
-    finally:
 
-        driver.quit() #close browser
+
+    driver.quit() #close browser
 
 
