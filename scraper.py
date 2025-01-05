@@ -24,7 +24,7 @@ def get_driver():
     options.add_argument("--no-sandbox")#sandbox security thing from chrome it could cause conflict with docker 
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
-
+    return driver
 
 def scrape_jobs(url, username, password):
     """
