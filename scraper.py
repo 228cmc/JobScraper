@@ -100,7 +100,7 @@ def scrape_jobs(url, username, password):
             company = "Company not found"
             print(f"Error fetching company: {e}")
         try:
-            location = job.find_element(By.CLASS_NAME, "location-class").text
+            location = job.find_element(By.XPATH, ".//div[contains(@class, 'BTZdAcRyXRGVGrcXspx9')]").text
         except Exception as e:
             location = "Location not found"
             print(f"Error fetching location: {e}")
