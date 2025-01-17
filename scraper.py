@@ -6,10 +6,10 @@ from webdriver_manager.chrome import ChromeDriverManager
 import time
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 
 def get_driver():
-
     """
     Sets up and returns a Chrome WebDriver for automated browser tasks.
 
@@ -22,7 +22,7 @@ def get_driver():
     options = Options()
     options.add_argument("--headless")
     options.add_argument("disable-gpu")
-    options.add_argument("--no-sandbox")#sandbox security thing from chrome it could cause conflict with docker 
+    options.add_argument("--no-sandbox")  # sandbox security thing from chrome it could cause conflict with docker 
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
     return driver
@@ -47,8 +47,7 @@ def scrape_jobs(url, username, password):
     time.sleep(10)  # Wait for the page to load 
 
     # Log in 
-    #use find_element of selenium  interact buttons
-
+    # use find_element of selenium to interact with buttons
     current_student_button = driver.find_element(By.XPATH, "//a[contains(text(), 'Current Student or Staff')]")
     current_student_button.click()
     time.sleep(10) 
@@ -59,48 +58,42 @@ def scrape_jobs(url, username, password):
         print("Error: No se pudo cargar la página de inicio de sesión.")
         print(e)
     
-    driver.find_element(By.ID, "username").send_keys(username)  #pass my username
-    driver.find_element(By.ID, "password").send_keys(password)  # andd password
+    driver.find_element(By.ID, "username").send_keys(username)  # pass my username
+    driver.find_element(By.ID, "password").send_keys(password)  # and password
     driver.find_element(By.XPATH, "//input[@value='LOGIN']").click()
     time.sleep(5)  # Allow time for the login to process and redirect to the dashboard
 
 
-    #according to the html structure reviewed with inspect tool..
-    #in this case for my future I have to passs the keyword, contract hours and  location
+    # according to the html structure reviewed with the inspect tool..
+    # in this case for my future I have to pass the keyword, contract hours and location
 
     keyword_input = driver.find_element(By.ID, "keywords")
-    #according to the web page look for the field where there is this text
-    keyword_input.send_keys("Intern")\
+    # according to the web page look for the field where there is this text
+    keyword_input.send_keys("Intern")
 
+    # Handle "Contract hours" dropdown
+    dropdown_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//label[text()='Contract hours']/following-sibling::div//button")))
+    dropdown_button.click()  # Click to open dropdown
 
-    contract_hours_dropdown = driver.find_element(By.XPATH, "//select[@id='contractHours']" )
-    contract_hours_dropdown.send_keys(Keys.DOWN)
-    contract_hours_dropdown.send_keys(Keys.RETURN)
+    # Select an option from the dropdown
+    option = wait.until(EC.element_to_be_clickable((By.XPATH, "//ul[@role='menu']//a[@role='menuitem' and text()='Full-time']")))
+    option.click()
 
-
-    location_input = driver.find_element(By.XPATH,"//button[contains(text(), 'Search')]" )
-    location_input.send_keys("London")
-
+    # Click the search button (location filter appears to be set via dropdowns/buttons)
+    search_button = driver.find_element(By.XPATH, "//button[contains(text(), 'Search')]")
+    search_button.click()
 
     time.sleep(5)
 
-    #extract the results
+    # Extract the results
     jobs = driver.find_elements(By.CLASS_NAME, "job-search-results-list-item")  # Update with the correct class name
 
     for job in jobs:
-        
         title = job.find_element(By.CLASS_NAME, "JoirlvIVRON4KeFSOTWva").text
         company = job.find_element(By.XPATH, ".//a[contains(@href, '/myfuture/organisations/detail')]").text
-
         location = job.find_element(By.XPATH, ".//div[contains(@class, 'i5BI9zXrlLbhrt2acxeB')]//div").text
         salary = job.find_element(By.XPATH, ".//div[contains(@class, 'fa-wallet')]/following-sibling::div").text
 
         print(f"Job Title: {title}, company: {company}, Location: {location}, salary: {salary}")
 
-
-
-
-
-    driver.quit() #close browser
-
-
+    driver.quit()  # close browser
