@@ -5,6 +5,7 @@ from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 import time
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
 
 
 def get_driver():
@@ -40,6 +41,7 @@ def scrape_jobs(url, username, password):
     """
     # Initialize the WebDriver
     driver = get_driver()  # Set up the Chrome WebDriver with the configured options
+    wait = WebDriverWait(driver, 10)  # Wait instance for dynamic elements
 
     driver.get(url)  # Open the  URL 
     time.sleep(10)  # Wait for the page to load 
@@ -66,8 +68,9 @@ def scrape_jobs(url, username, password):
     #according to the html structure reviewed with inspect tool..
     #in this case for my future I have to passs the keyword, contract hours and  location
 
-    keyword_input = driver.find_element(By.CSS_SELECTOR, "input[placeholder= 'eg. Graduate, Intern, Diversity, Disability]")
-    keyword_input.send_keys("Intern")
+    keyword_input = driver.find_element(By.ID, "keywords")
+    #according to the web page look for the field where there is this text
+    keyword_input.send_keys("Intern")\
 
 
     contract_hours_dropdown = driver.find_element(By.XPATH, "//select[@id='contractHours']" )
