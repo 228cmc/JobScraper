@@ -89,11 +89,24 @@ def scrape_jobs(url, username, password):
     jobs = driver.find_elements(By.CLASS_NAME, "job-search-results-list-item")  # Update with the correct class name
 
     for job in jobs:
-        title = job.find_element(By.CLASS_NAME, "JoirlvIVRON4KeFSOTWva").text
-        company = job.find_element(By.XPATH, ".//a[contains(@href, '/myfuture/organisations/detail')]").text
-        location = job.find_element(By.XPATH, ".//div[contains(@class, 'i5BI9zXrlLbhrt2acxeB')]//div").text
-        salary = job.find_element(By.XPATH, ".//div[contains(@class, 'fa-wallet')]/following-sibling::div").text
+        try:
+            title = job.find_element(By.XPATH, ".//h4").text  # Cambiar XPath si es necesario
+        except Exception as e:
+            title = "Title not found"
+            print(f"Error fetching title: {e}")
+        try:
+            company = job.find_element(By.XPATH, ".//a[contains(@href, '/myfuture/organisations/detail')]").text
+        except Exception as e:
+            company = "Company not found"
+            print(f"Error fetching company: {e}")
+        try:
+            location = job.find_element(By.CLASS_NAME, "location-class").text
+        except Exception as e:
+            location = "Location not found"
+            print(f"Error fetching location: {e}")
 
-        print(f"Job Title: {title}, company: {company}, Location: {location}, salary: {salary}")
+
+        print(f"Job Title: {title}, Company: {company}, Location: {location}")
+
 
     driver.quit()  # close browser
