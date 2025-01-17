@@ -47,7 +47,7 @@ def scrape_jobs(url, username, password):
     # Log in 
     #use find_element of selenium  interact buttons
 
-    current_student_button = driver.find_element(By.XPATH, "//button[contains(text(), 'Current Student or Staff')]")
+    current_student_button = driver.find_element(By.XPATH, "//a[contains(text(), 'Current Student or Staff')]")
     current_student_button.click()
     time.sleep(10) 
     try:
@@ -59,7 +59,7 @@ def scrape_jobs(url, username, password):
     
     driver.find_element(By.ID, "username").send_keys(username)  #pass my username
     driver.find_element(By.ID, "password").send_keys(password)  # andd password
-    driver.find_element(By.ID, "submitButton").click()  # click the login button to submit the form
+    driver.find_element(By.XPATH, "//input[@value='LOGIN']").click()
     time.sleep(5)  # Allow time for the login to process and redirect to the dashboard
 
 
