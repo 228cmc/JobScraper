@@ -90,10 +90,14 @@ def scrape_jobs(url, username, password):
 
     for job in jobs:
         try:
-            title = job.find_element(By.XPATH, ".//h4").text  # Cambiar XPath si es necesario
+            title_element = job.find_element(By.XPATH, ".//h4")
+            title = title_element.text
+            # Extract the link associated with the job title
+            link = job.find_element(By.XPATH, ".//h4/ancestor::a").get_attribute("href")
         except Exception as e:
             title = "Title not found"
-            print(f"Error fetching title: {e}")
+            link = "Link not found"
+            print(f"Error fetching title or link: {e}")
         try:
             company = job.find_element(By.XPATH, ".//a[contains(@href, '/myfuture/organisations/detail')]").text
         except Exception as e:
@@ -105,8 +109,8 @@ def scrape_jobs(url, username, password):
             location = "Location not found"
             print(f"Error fetching location: {e}")
 
+        print(f"Job Title: {title}, Company: {company}, Location: {location}, Link: {link}")
 
-        print(f"Job Title: {title}, Company: {company}, Location: {location}")
 
 
     driver.quit()  # close browser
