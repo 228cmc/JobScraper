@@ -16,7 +16,7 @@ def main():
 
     try:
 
-        print(f"USERNAME: {USERNAME}, PASSWORD: {PASSWORD}, JOB_URL: {JOB_URL}")
+        #print(f"USERNAME: {USERNAME}, PASSWORD: {PASSWORD}, JOB_URL: {JOB_URL}")
 
         scrape_jobs(JOB_URL,USERNAME, PASSWORD)
     except Exception as e:
