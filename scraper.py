@@ -7,6 +7,7 @@ import time
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from config import KEYWORDS, CONTRACT_HOURS, LOCATION
 
 
 def get_driver():
@@ -68,16 +69,24 @@ def scrape_jobs(url, username, password):
     # in this case for my future I have to pass the keyword, contract hours and location
 
     keyword_input = driver.find_element(By.ID, "keywords")
-    # according to the web page look for the field where there is this text
-    keyword_input.send_keys("Intern")
+    # Enter the keywords from the config file
+    keyword_input.send_keys(KEYWORDS)
 
     # Handle "Contract hours" dropdown
     dropdown_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//label[text()='Contract hours']/following-sibling::div//button")))
     dropdown_button.click()  # Click to open dropdown
 
-    # Select an option from the dropdown
-    option = wait.until(EC.element_to_be_clickable((By.XPATH, "//ul[@role='menu']//a[@role='menuitem' and text()='Full-time']")))
+    # Select the contract hours option from the config file
+    option = wait.until(EC.element_to_be_clickable(
+        (By.XPATH, f"//ul[@role='menu']//a[@role='menuitem' and text()='{CONTRACT_HOURS}']")
+    ))   
     option.click()
+
+    # Enter the location if specified in the config file
+    """
+    if LOCATION:
+        location_input = driver.find_element(By.ID, "locations")
+        location_input.send_keys(LOCATION) """
 
     # Click the search button (location filter appears to be set via dropdowns/buttons)
     search_button = driver.find_element(By.XPATH, "//button[contains(text(), 'Search')]")
