@@ -8,6 +8,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from config import KEYWORDS, CONTRACT_HOURS, LOCATION
+from db.database import save_to_database
 
 
 def get_driver():
@@ -120,6 +121,7 @@ def scrape_jobs(url, username, password):
 
         print(f"Job Title: {title}, Company: {company}, Location: {location}, Link: {link}")
 
+        save_to_database(title, company, location, link)
 
 
     driver.quit()  # close browser
