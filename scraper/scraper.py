@@ -147,6 +147,8 @@ def scrape_jobs(url, username, password):
                 "company": company,
                 "location": location,
                 "salary": salary,
+                "expected_commencement": expected_commencement,  # Add expected commencement
+                "applications_close_on": applications_close_on,  # Add applications close on
                 "link": link
             })
         except Exception as e:
