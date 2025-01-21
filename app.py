@@ -1,32 +1,47 @@
-from flask import Flask, render_template
-import sqlite3
-import os
+from flask import Flask, render_template, request
+from db.database import (
+    create_tables,
+    get_all_jobs,
+    get_closing_soon_jobs,
+    get_jobs_grouped_by_company,
+)
 
-app = Flask(__name__)  # Initializes the Flask application
-
-# Path to the SQLite database
-DB_PATH = os.path.join("db", "jobs.db")
+app = Flask(__name__)
 
 @app.route("/")
 def index():
     """
-    Displays the jobs stored in the database on the home page.
+    Displays all jobs stored in the database, ordered by application close date.
     """
-    connection = sqlite3.connect(DB_PATH)  # Connects to the SQLite database
-    cursor = connection.cursor()
-    cursor.execute("SELECT title, company, location, link FROM jobs;")  # Query to retrieve job details
-    jobs = cursor.fetchall()  # Fetches all rows from the query
-    connection.close()  # Closes the database connection
-    return render_template("index.html", jobs=jobs)  # Renders the `index.html` template with jobs data
+    jobs = get_all_jobs()  # Fetch all jobs from the database
+    return render_template("index.html", jobs=jobs)  # Render the main view
+
+@app.route("/closing-soon")
+def closing_soon():
+    """
+    Displays jobs that are closing soon (default: within 7 days).
+    """
+    days = request.args.get("days", default=7, type=int)
+    jobs = get_closing_soon_jobs(days=days)
+    return render_template("index.html", jobs=jobs)
+
+@app.route("/grouped-by-company")
+def grouped_by_company():
+    """
+    Displays jobs grouped by company.
+    """
+    grouped_jobs = get_jobs_grouped_by_company()
+    return render_template("grouped.html", grouped_jobs=grouped_jobs)
 
 @app.route("/refresh")
 def refresh():
     """
-    Refreshes the database by running the scraper.
+    Refreshes the database by running the scraper and updates the job listings.
     """
-    from main import main  # Dynamically imports the `main()` function
-    main()  # Runs the scraping process and updates the database
-    return "The jobs database has been successfully updated."  # Confirmation message
+    from main import main
+    main()
+    return "The jobs database has been successfully updated."
 
 if __name__ == "__main__":
-    app.run(debug=True)  # Starts the Flask application in debug mode
+    create_tables()  # Ensure tables exist before starting the app
+    app.run(debug=True)
