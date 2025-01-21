@@ -140,8 +140,8 @@ The job data is also stored in a SQLite database. To interact with the database,
 
 
  Pending Tasks for me :p
-Add a column for "Scrapping Requirements".
-Reorganize the table columns for better clarity.
-Extract and display the country separately.
-unitest
+-Add a column for "Scrapping Requirements".
+-Reorganize the table columns for better clarity.
+-Extract and display the country separately.
+-unitest
 
