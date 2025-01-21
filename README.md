@@ -139,3 +139,9 @@ The job data is also stored in a SQLite database. To interact with the database,
  ([228cmc](https://github.com/228cmc))  
 
 
+ Pending Tasks for me :p
+Add a column for "Scrapping Requirements".
+Reorganize the table columns for better clarity.
+Extract and display the country separately.
+unitest
+
