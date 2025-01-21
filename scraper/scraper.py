@@ -101,7 +101,54 @@ def scrape_jobs(url, username, password):
             link = job_element.find_element(By.XPATH, ".//h4/ancestor::a").get_attribute("href")  # Extract job link
             company = job_element.find_element(By.XPATH, ".//a[contains(@href, '/myfuture/organisations/detail')]").text  # Extract company name
             location = job_element.find_element(By.XPATH, ".//div[contains(@class, 'BTZdAcRyXRGVGrcXspx9')]").text  # Extract location
-            jobs.append({"title": title, "company": company, "location": location, "link": link})
+
+            # Navigate to the detailed page to extract the salary
+            driver.execute_script("window.open(arguments[0]);", link)  # Open the link in a new tab
+            driver.switch_to.window(driver.window_handles[1])  # Switch to the new tab
+
+            time.sleep(5)  # Wait for the job details page to load
+            try:
+                # Extract salary from the detailed page
+                salary_element = driver.find_element(By.XPATH, "//div[contains(text(), '£') or contains(text(), '$') or contains(text(), '€') or contains(text(), 'per') or contains(text(), 'experience') or contains(text(), 'Competitive')]"
+)
+                salary = salary_element.text
+                print(salary)
+            except Exception:
+                salary = "Salary not listed"
+
+
+            try:
+                expected_commencement_element = driver.find_element(By.XPATH, "//dt[contains(text(), 'Expected commencement')]/following-sibling::dd[1]")
+                expected_commencement = expected_commencement_element.text
+                print(f"Expected commencement found: {expected_commencement}")  # Debug print
+            except Exception as e:
+                expected_commencement = "Not found"
+                print(f"Expected commencement not found. Error: {e}")  # Debug print
+
+
+            # Extract "Applications close on"
+            try:
+                close_date_element = driver.find_element(By.XPATH, "//div[contains(text(), 'Applications close on')]")
+                applications_close_on = close_date_element.text.replace("Applications close on", "").strip()#
+                print('application close',applications_close_on)
+
+            except Exception:
+                applications_close_on = "Not found"
+
+
+
+
+            driver.close()  # Close the new tab
+            driver.switch_to.window(driver.window_handles[0])  # Switch back to the main tab
+
+            # Save the job data
+            jobs.append({
+                "title": title,
+                "company": company,
+                "location": location,
+                "salary": salary,
+                "link": link
+            })
         except Exception as e:
             print(f"Error extracting job details: {e}")
 
