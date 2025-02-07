@@ -133,6 +133,9 @@ The job data is also stored in a SQLite database. To interact with the database,
    ```
 
 
+You can customize the range of days by adding the days query parameter to the endpoint URL. For example:
+
+Next 10 days: http://127.0.0.1:5000/closing-soon?days=10
 
 ## Authors
 
@@ -140,6 +143,7 @@ The job data is also stored in a SQLite database. To interact with the database,
 
 
  Pending Tasks for me :p
+ -alerts that day according to the postulation time 
 -Add a column for "Scrapping Requirements".
 -Reorganize the table columns for better clarity.
 -Extract and display the country separately.
